@@ -1,195 +1,2177 @@
 {
-  "openapi": "3.0.1",
+  "openapi": "3.0.2",
   "info": {
-    "title": "OpenAPI Plant Store",
-    "description": "A sample API that uses a plant store as an example to demonstrate features in the OpenAPI specification",
-    "license": {
-      "name": "MIT"
+    "title": "CELITECH API",
+    "version": "1.1.0",
+    "contact": {
+      "name": "CELITECH",
+      "email": "support@celitech.com"
     },
-    "version": "1.0.0"
+    "description": "Welcome to the CELITECH API documentation!\n\nUseful links: [Homepage](https://www.celitech.com) | [Support email](mailto:support@celitech.com) | [Blog](https://www.celitech.com/blog/)\n\n# Introduction\n\nThis guide is your go-to resource for the CELITECH API, with full documentation and schemas.\n\nNeed help? Email us at support@celitech.com.\n\n\"Partners\" refers to online service providers that use our eSIM API. Access levels include Gold, Platinum, and Diamond.\n\n## API\n\nThe CELITECH API is designed for use by partner platforms, including both web and mobile applications. It's assumed all endpoint calls are initiated from the backend of an integrated platform.\n\nAPI URL: `https://api.celitech.net/v1`\n\n## Authentication & Authorization\nCELITECH API uses the OAuth 2.0 protocol for authentication and authorization.\nThe endpoints are protected using client credentials flow which is based on a token exchange. The token has a defined life span (typically 1 hour), after which a new token must be obtained.\n\nTo begin, obtain OAuth 2.0 client credentials ( **CLIENT_ID** & **CLIENT_SECRET** ) from the [CELITECH Dashboard](https://www.dashboard.celitech.com/). Then your client application requests an access token from the CELITECH Authorization Server, extracts a token from the response, and sends the token to the CELITECH API that you want to access.\n\nSecurity Scheme Type: `OAuth2`\n\nFlow type: `clientCredentials`\n\nToken URL: `https://auth.celitech.net/oauth2/token`\n",
+    "x-logo": {
+      "url": "/logo.png",
+      "altText": "CELITECH API"
+    }
   },
   "servers": [
     {
-      "url": "http://sandbox.mintlify.com"
+      "url": "https://api.celitech.net/v1"
     }
   ],
+  "components": {
+    "securitySchemes": {
+      "oAuth2ClientCredentials": {
+        "type": "oauth2",
+        "flows": {
+          "clientCredentials": {
+            "tokenUrl": "https://auth.celitech.net/oauth2/token",
+            "scopes": {}
+          }
+        }
+      }
+    }
+  },
   "security": [
     {
-      "bearerAuth": []
+      "oAuth2ClientCredentials": []
     }
   ],
   "paths": {
-    "/plants": {
+    "/destinations": {
       "get": {
-        "description": "Returns all plants from the system that the user has access to",
-        "parameters": [
-          {
-            "name": "limit",
-            "in": "query",
-            "description": "The maximum number of results to return",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          }
+        "summary": "List Destinations",
+        "operationId": "listDestinations",
+        "description": "List Destinations",
+        "tags": [
+          "Destinations"
         ],
         "responses": {
           "200": {
-            "description": "Plant response",
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Plant"
+                  "type": "object",
+                  "properties": {
+                    "destinations": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "name": {
+                            "type": "string",
+                            "example": "France",
+                            "description": "Name of the destination"
+                          },
+                          "destination": {
+                            "type": "string",
+                            "example": "FRA",
+                            "description": "ISO representation of the destination"
+                          },
+                          "supportedCountries": {
+                            "type": "array",
+                            "example": [
+                              "France"
+                            ],
+                            "items": {
+                              "type": "string"
+                            },
+                            "description": "This array indicates the geographical area covered by a specific destination. If the destination represents a single country, the array will include that country. However, if the destination represents a broader regional scope, the array will be populated with the names of the countries belonging to that region."
+                          }
+                        }
+                      }
+                    }
                   }
                 }
               }
             }
           },
           "400": {
-            "description": "Unexpected error",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
                 }
               }
             }
           }
-        }
-      },
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const { data } = await celitechSdk.destinations.listDestinations();\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\n\nvar client = new CelitechSdkClient();\n\nvar response = await client.Destinations.ListDestinationsAsync();\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\nresponse, err := client.Destinations.ListDestinations(context.Background())\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nresult = sdk.destinations.list_destinations()\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X GET \\\n  https://api.celitech.net/v1/destinations \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const resp = await fetch(\n    `https://api.celitech.net/v1/destinations`,\n    {\n      method: 'GET',\n      headers: {\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      }\n    }\n  );\n\n  const data = await resp.text();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nurl = \"https://api.celitech.net/v1/destinations\"\n\nheaders = {\"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"}\n\nresponse = requests.get(url, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n    var request = await client.GetAsync(\"https://api.celitech.net/v1/destinations\");\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var host = \"https://api.celitech.net\";\n    var pathname = \"/v1/destinations\";\n    var request = HttpRequest.newBuilder()\n      .GET()\n      .uri(URI.create(host + pathname ))\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  reqUrl := \"https://api.celitech.net/v1/destinations\"\n  req, _ := http.NewRequest(\"GET\", reqUrl, nil)\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\"\n  ],\n  CURLOPT_URL => \"https://api.celitech.net/v1/destinations\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"GET\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\nurl = URI('https://api.celitech.net/v1/destinations')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Get.new(url)\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
+      }
+    },
+    "/packages": {
+      "get": {
+        "summary": "List Packages",
+        "description": "List Packages",
+        "operationId": "listPackages",
+        "tags": [
+          "Packages"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "name": "destination",
+            "description": "ISO representation of the package's destination.",
+            "schema": {
+              "type": "string",
+              "example": "FRA"
+            }
+          },
+          {
+            "in": "query",
+            "name": "startDate",
+            "description": "Start date of the package's validity in the format 'yyyy-MM-dd'. This date can be set to the current day or any day within the next 12 months.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2023-11-01T00:00:00.000Z"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endDate",
+            "description": "End date of the package's validity in the format 'yyyy-MM-dd'. End date can be maximum 90 days after Start date.",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2023-11-20T00:00:00.000Z"
+            }
+          },
+          {
+            "in": "query",
+            "name": "afterCursor",
+            "description": "To get the next batch of results, use this parameter. It tells the API where to start fetching data after the last item you received. It helps you avoid repeats and efficiently browse through large sets of data.",
+            "schema": {
+              "type": "string",
+              "example": "Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Maximum number of packages to be returned in the response. The value must be greater than 0 and less than or equal to 160. If not provided, the default value is 20",
+            "schema": {
+              "type": "number",
+              "example": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "startTime",
+            "deprecated": true,
+            "description": "Epoch value representing the start time of the package's validity. This timestamp can be set to the current time or any time within the next 12 months",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "endTime",
+            "deprecated": true,
+            "description": "Epoch value representing the end time of the package's validity. End time can be maximum 90 days after Start time",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "in": "query",
+            "name": "duration",
+            "deprecated": true,
+            "description": "Duration in seconds for the package's validity. If this parameter is present, it will override the startTime and endTime parameters. The maximum duration for a package's validity period is 90 days",
+            "schema": {
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "packages": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "4973fa15-6979-4daa-9cf3-672620df819c",
+                            "description": "ID of the package"
+                          },
+                          "destination": {
+                            "type": "string",
+                            "example": "FRA",
+                            "description": "ISO representation of the package's destination"
+                          },
+                          "dataLimitInBytes": {
+                            "type": "number",
+                            "example": 1073741824,
+                            "description": "Size of the package in Bytes"
+                          },
+                          "minDays": {
+                            "type": "number",
+                            "example": 0,
+                            "description": "Min number of days for the package"
+                          },
+                          "maxDays": {
+                            "type": "number",
+                            "example": 30,
+                            "description": "Max number of days for the package"
+                          },
+                          "priceInCents": {
+                            "type": "number",
+                            "example": 10000,
+                            "description": "Price of the package in cents"
+                          }
+                        }
+                      }
+                    },
+                    "afterCursor": {
+                      "type": "string",
+                      "example": "Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA",
+                      "description": "The cursor value representing the end of the current page of results. Use this cursor value as the \"afterCursor\" parameter in your next request to retrieve the subsequent page of results. It ensures that you continue fetching data from where you left off, facilitating smooth pagination",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const { data } = await celitechSdk.packages.listPackages({\n    destination: 'FRA',\n    startDate: '2023-11-01T00:00:00.000Z',\n    endDate: '2023-11-20T00:00:00.000Z',\n    afterCursor: 'Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA',\n    limit: 20,\n    startTime: 8,\n    endTime: 7,\n    duration: 5.7,\n  });\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\n\nvar client = new CelitechSdkClient();\n\nvar response = await client.Packages.ListPackagesAsync(\"FRA\", \"2023-11-01T00:00:00.000Z\", \"2023-11-20T00:00:00.000Z\", \"Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA\", 20, 3, 1, 4.27);\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n  \"github.com/swagger-api/swagger-petstore/pkg/packages\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\n\nparams := packages.ListPackagesRequestParams{}\n\n\nresponse, err := client.Packages.ListPackages(context.Background(), params)\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nresult = sdk.packages.list_packages(\n    destination=\"FRA\",\n    start_date=\"2023-11-01T00:00:00.000Z\",\n    end_date=\"2023-11-20T00:00:00.000Z\",\n    after_cursor=\"Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA\",\n    limit=20\n)\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X GET \\\n  https://api.celitech.net/v1/packages \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const resp = await fetch(\n    `https://api.celitech.net/v1/packages`,\n    {\n      method: 'GET',\n      headers: {\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      }\n    }\n  );\n\n  const data = await resp.text();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nurl = \"https://api.celitech.net/v1/packages\"\n\nheaders = {\"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"}\n\nresponse = requests.get(url, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n    var request = await client.GetAsync(\"https://api.celitech.net/v1/packages\");\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var host = \"https://api.celitech.net\";\n    var pathname = \"/v1/packages\";\n    var request = HttpRequest.newBuilder()\n      .GET()\n      .uri(URI.create(host + pathname ))\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  reqUrl := \"https://api.celitech.net/v1/packages\"\n  req, _ := http.NewRequest(\"GET\", reqUrl, nil)\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\"\n  ],\n  CURLOPT_URL => \"https://api.celitech.net/v1/packages\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"GET\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\nurl = URI('https://api.celitech.net/v1/packages')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Get.new(url)\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
+      }
+    },
+    "/purchases": {
       "post": {
-        "description": "Creates a new plant in the store",
+        "summary": "Create Purchase",
+        "description": "This endpoint is used to purchase a new eSIM by providing the package details.",
+        "operationId": "createPurchase",
+        "tags": [
+          "Purchases"
+        ],
         "requestBody": {
-          "description": "Plant to add to the store",
+          "required": true,
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/NewPlant"
+                "type": "object",
+                "properties": {
+                  "destination": {
+                    "type": "string",
+                    "example": "FRA",
+                    "description": "ISO representation of the package's destination"
+                  },
+                  "dataLimitInGB": {
+                    "type": "number",
+                    "example": 1,
+                    "description": "Size of the package in GB. The available options are 1, 2, 3, 5, 8, 20GB"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-11-01T00:00:00.000Z",
+                    "description": "Start date of the package's validity in the format 'yyyy-MM-dd'. This date can be set to the current day or any day within the next 12 months."
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-11-20T00:00:00.000Z",
+                    "description": "End date of the package's validity in the format 'yyyy-MM-dd'. End date can be maximum 90 days after Start date."
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "example@domain.com",
+                    "description": "Email address where the purchase confirmation email will be sent (including QR Code & activation steps)"
+                  },
+                  "referenceId": {
+                    "type": "string",
+                    "example": "abc111222333444",
+                    "description": "An identifier provided by the partner to link this purchase to their booking or transaction for analytics and debugging purposes."
+                  },
+                  "networkBrand": {
+                    "type": "string",
+                    "example": "CELITECH",
+                    "description": "Customize the network brand of the issued eSIM. This parameter is accessible to platforms with Diamond tier and requires an alphanumeric string of up to 15 characters"
+                  },
+                  "startTime": {
+                    "deprecated": true,
+                    "type": "number",
+                    "description": "Epoch value representing the start time of the package's validity. This timestamp can be set to the current time or any time within the next 12 months."
+                  },
+                  "endTime": {
+                    "deprecated": true,
+                    "type": "number",
+                    "description": "Epoch value representing the end time of the package's validity. End time can be maximum 90 days after Start time."
+                  }
+                },
+                "required": [
+                  "destination",
+                  "dataLimitInGB",
+                  "startDate",
+                  "endDate"
+                ]
               }
             }
-          },
-          "required": true
+          }
         },
         "responses": {
           "200": {
-            "description": "plant response",
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Plant"
+                  "type": "object",
+                  "properties": {
+                    "purchase": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "1b97b67a-f4ea-45ff-bbc1-8f424b1418c4",
+                          "description": "ID of the purchase"
+                        },
+                        "packageId": {
+                          "type": "string",
+                          "example": "6cf19d46-b545-4029-a46b-cdeba22b6957",
+                          "description": "ID of the package"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-10-31T22:00:00.000Z",
+                          "description": "Start date of the package's validity in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-11-20T21:59:59.000Z",
+                          "description": "End date of the package's validity in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                        },
+                        "createdDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-10-20T00:00:00.000Z",
+                          "description": "Creation date of the purchase in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                        },
+                        "startTime": {
+                          "deprecated": true,
+                          "type": "number",
+                          "description": "Epoch value representing the start time of the package's validity"
+                        },
+                        "endTime": {
+                          "deprecated": true,
+                          "type": "number",
+                          "description": "Epoch value representing the end time of the package's validity"
+                        }
+                      }
+                    },
+                    "profile": {
+                      "type": "object",
+                      "properties": {
+                        "iccid": {
+                          "type": "string",
+                          "example": "1111222233334444555",
+                          "description": "ID of the eSIM",
+                          "minLength": 18,
+                          "maxLength": 22
+                        },
+                        "activationCode": {
+                          "type": "string",
+                          "example": "iVBORw0KGgoAAAANSUhEUgAAAQAAAAEACAYAAABccqhmAAAABmJLR0QA/wD/AP+gvaeTAAAHRklEQVR4nO3d245TMQwF0Bbx/79cnkc6QQRi7Mxe6xFV6aHtbEW52O/P5/N5AZF+dD8A0EcAQDABAMEEAAT7+fSP7/f7fz/HX1mtX66ef/f1u++70vU8u+97SvXznxqn6/fT5en5zQAgmACAYAIAggkACCYAINjjLsBK16nhU6usp1bFu55n2u7Aqeeftop+6nd+w9+LGQAEEwAQTABAMAEAwQQABNvaBVg5tYpbvWpavSredSa/6y7DKbd/77sm/b2YAUAwAQDBBAAEEwAQTABAsCO7ANOcOkvf9frV83edLb+lAtKp50liBgDBBAAEEwAQTABAMAEAwb7lLsBK9Rn4aWfIu/6/1fX2T+2e2B0wA4BoAgCCCQAIJgAgmACAYEd2Aaatmlav7t5+Fn3abkLaXYBJfy9mABBMAEAwAQDBBAAEEwAQbGsXYFoX11NOnVGvrvN/qqLOyi19E6Z9/rvjTGIGAMEEAAQTABBMAEAwAQDBHncBJp1Vvsm0Vd/q1fVpXY9PjX9qd+MGZgAQTABAMAEAwQQABBMAEOxIRaBbzqJX+67P01VhqauyUPXuQ9edgqf3NQOAYAIAggkACCYAIJgAgGCPuwBdZ9qdLf/966sr1Zzq0rtSfca+63db/blVMgOAYAIAggkACCYAIJgAgGAtFYGqz3jvql6l39W12r/SdWa++o5J1zinxj/x/ZoBQDABAMEEAAQTABBMAECwI92BT60Sd51pPzX+rq46/F3fY9eqfvXzd931ODGOGQAEEwAQTABAMAEAwQQABHt/HpYGp53B7upyuzKtf8G03Zld035vp9zQL8MMAIIJAAgmACCYAIBgAgCCjaoIdOrMc7VbutZOqj//euXdfTil8ns0A4BgAgCCCQAIJgAgmACAYC3dgbvq298yzsp3fc5dXf0Xur6vU+M/MQOAYAIAggkACCYAIJgAgGCPFYG2B2k6472r631XunZbbtkd6HrOleoKV9Xv+8QMAIIJAAgmACCYAIBgAgCCHekO3PX6la7V2pXdSke7Vs9Zvetxe6Wmlep+E139Mp6YAUAwAQDBBAAEEwAQTABAsK2KQNPO9q9Mq58/7fO8fbela7V/Zdr3u8MMAIIJAAgmACCYAIBgAgCCbXUHntYVt+tMe1flnBvOlk+0+/zV/99T36++AMA/EQAQTABAMAEAwQQABNvqC3DLavZKV6WaldtX12+/U7Byyy7Mib9HMwAIJgAgmACAYAIAggkACFbaHXilup58dV33U++7O061ad/j7vueMm21v3J8MwAIJgAgmACAYAIAggkACPa4CzCtEs6uaXXjq03bNejaDZm2a9P1O9EdGPgjAgCCCQAIJgAgmACAYI99AXZN6667a1rd+K5usx116X9n2vPsuuFuiBkABBMAEEwAQDABAMEEAAQ7UhFoOfiw+v9ddw2qV+NvOWO/65b3rVb5+zEDgGACAIIJAAgmACCYAIBgW3cBulZHu7oSd61Cdz3/Kbe877Q7ILtO7HaZAUAwAQDBBAAEEwAQTABAsMddgGl10avPrk+7s7Ay7Q5FVyWi6nGqx+/6vT0xA4BgAgCCCQAIJgAgmACAYFt3AbpWU6vPlk874z2ta23166t3GXbdUlnoxHOaAUAwAQDBBAAEEwAQTABAsK2+ALecXd81bfdh2ue80vX5d/U1mPY8u+PrCwB8IQAgmACAYAIAggkACHbkLsCp1eBpXW6nmVaZZ9odipXqfg0rk1b7V8wAIJgAgGACAIIJAAgmACDYVl+A3dXgU6vTXWfmp3Xpra7MU63rc1i5uZ7/KWYAEEwAQDABAMEEAAQTABBs6y7Arlv6CEzrhlxt9/m7dnOmra5Pq7ykLwDwTwQABBMAEEwAQDABAMGO7ALc0AX1b8bfXRU/Nf60yj/V40w7k9/Vl6FjN8QMAIIJAAgmACCYAIBgAgCCld4FWJlWz796VbxrtXx3nK7PeeWWfgQ3VygyA4BgAgCCCQAIJgAgmACAYI+7AF2r06fGv6UyT9eZ9q6z+ru67lzsjr9r0q6WGQAEEwAQTABAMAEAwQQABNvqDjzNqW7Fu6b1EbjlDH9XV+VqN1dYMgOAYAIAggkACCYAIJgAgGBbFYGmdUfdVd0Vt2t3YNpdiWln76t3GW6pUOQuAPCFAIBgAgCCCQAIJgAg2KjuwNMqrnR16T3lljsLXbsq1V2hd1XvejwxA4BgAgCCCQAIJgAgmACAYC3dgW+xu+o7rYLNd737sKtjdf31Ovd5nqp85S4A8IUAgGACAIIJAAgmACBY1C5A19n+21ePd02r83/q89l1w+/NDACCCQAIJgAgmACAYAIAgh3ZBZhWF/3UKvS0ij2nVo9Xqj+3ropJt3Qrrv5+n5gBQDABAMEEAAQTABBMAECw9+dhiXFaZZuV6j4C07ohp/1/u9xwhv8UMwAIJgAgmACAYAIAggkACPa4CwBkMAOAYAIAggkACCYAINgvCaqkMmOR1zUAAAAASUVORK5CYII=",
+                          "description": "QR Code of the eSIM as base64",
+                          "minLength": 1000,
+                          "maxLength": 8000
+                        }
+                      }
+                    }
+                  }
                 }
               }
             }
           },
           "400": {
-            "description": "unexpected error",
+            "description": "Bad Request",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
                 }
               }
             }
           }
-        }
-      }
-    },
-    "/plants/{id}": {
-      "delete": {
-        "description": "Deletes a single plant based on the ID supplied",
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk, CreatePurchaseRequest } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const createPurchaseRequest: CreatePurchaseRequest = {\n    destination: 'FRA',\n    dataLimitInGb: 1,\n    startDate: '2023-11-01T00:00:00.000Z',\n    endDate: '2023-11-20T00:00:00.000Z',\n    email: 'example@domain.com',\n    referenceId: 'abc111222333444',\n    networkBrand: 'CELITECH',\n    startTime: 10,\n    endTime: 9.54,\n  };\n\n  const { data } = await celitechSdk.purchases.createPurchase(input);\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\nusing CelitechSdk.Models;\n\nvar client = new CelitechSdkClient();\n\nvar input = new CreatePurchaseRequest(\"FRA\", 1, \"2023-11-01T00:00:00.000Z\", \"2023-11-20T00:00:00.000Z\");\n\nvar response = await client.Purchases.CreatePurchaseAsync(input);\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n  \"github.com/swagger-api/swagger-petstore/pkg/purchases\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\n\nrequest := purchases.CreatePurchaseRequest{}\nrequest.SetDestination(\"Destination\")\nrequest.SetDataLimitInGb(float64(123))\nrequest.SetStartDate(\"StartDate\")\nrequest.SetEndDate(\"EndDate\")\n\nresponse, err := client.Purchases.CreatePurchase(context.Background(), request)\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\nfrom celitech_sdk.models import CreatePurchaseRequest\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nrequest_body = CreatePurchaseRequest(\n    destination=\"FRA\",\n    data_limit_in_gb=1,\n    start_date=\"2023-11-01T00:00:00.000Z\",\n    end_date=\"2023-11-20T00:00:00.000Z\",\n    email=\"example@domain.com\",\n    reference_id=\"abc111222333444\",\n    network_brand=\"CELITECH\"\n)\n\nresult = sdk.purchases.create_purchase(request_body=request_body)\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X POST \\\n  https://api.celitech.net/v1/purchases \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"destination\": \"FRA\",\n    \"dataLimitInGB\": 1,\n    \"startDate\": \"2023-11-01\",\n    \"endDate\": \"2023-11-20\"\n  }'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const resp = await fetch(\n    `https://api.celitech.net/v1/purchases`,\n    {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json',\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      },\n      body: JSON.stringify({\n        destination: 'FRA',\n        dataLimitInGB: 1,\n        startDate: '2023-11-01',\n        endDate: '2023-11-20'\n      })\n    }\n  );\n\n  const data = await resp.json();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nurl = \"https://api.celitech.net/v1/purchases\"\n\npayload = {\n  \"destination\": \"FRA\",\n  \"dataLimitInGB\": 1,\n  \"startDate\": \"2023-11-01\",\n  \"endDate\": \"2023-11-20\"\n}\n\nheaders = {\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\nusing System.Text;\nusing Newtonsoft.Json.Linq;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n    JObject json = JObject.Parse(@\"{\n        destination: 'FRA',\n        dataLimitInGB: 1,\n        startDate: '2023-11-01',\n        endDate: '2023-11-20'\n      }\");\n    var postData = new StringContent(json.ToString(), Encoding.UTF8, \"application/json\");\n    var request = await client.PostAsync(\"https://api.celitech.net/v1/purchases\", postData);\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var payload = String.join(\"\\n\"\n      , \"{\"\n      , \" \\\"destination\\\": \\\"FRA\\\",\"\n      , \" \\\"dataLimitInGB\\\": 1,\"\n      , \" \\\"startDate\\\": \\\"2023-11-01\\\",\"\n      , \" \\\"endDate\\\": \\\"2023-11-20\\\"\"\n      , \"}\"\n    );\n\n    var host = \"https://api.celitech.net\";\n    var pathname = \"/v1/purchases\";\n    var request = HttpRequest.newBuilder()\n      .POST(HttpRequest.BodyPublishers.ofString(payload))\n      .uri(URI.create(host + pathname ))\n      .header(\"Content-Type\", \"application/json\")\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"bytes\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  reqUrl := \"https://api.celitech.net/v1/purchases\"\n  var data = []byte(`{\n    \"destination\": \"FRA\",\n    \"dataLimitInGB\": 1,\n    \"startDate\": \"2023-11-01\",\n    \"endDate\": \"2023-11-20\"\n  }`)\n  req, _ := http.NewRequest(\"POST\", reqUrl, bytes.NewBuffer(data))\n  req.Header.Add(\"Content-Type\", \"application/json\")\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\n$curl = curl_init();\n\n$payload = array(\n  \"destination\" => \"FRA\",\n  \"dataLimitInGB\" => 1,\n  \"startDate\" => \"2023-11-01\",\n  \"endDate\" => \"2023-11-20\"\n);\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\",\n    \"Content-Type: application/json\"\n  ],\n  CURLOPT_POSTFIELDS => json_encode($payload),\n  CURLOPT_URL => \"https://api.celitech.net/v1/purchases\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"POST\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'json'\nrequire 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\nurl = URI('https://api.celitech.net/v1/purchases')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Post.new(url)\nrequest['Content-Type'] = 'application/json'\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\nrequest.body = {\n  destination: 'FRA',\n  dataLimitInGB: 1,\n  startDate: '2023-11-01',\n  endDate: '2023-11-20'\n}.to_json\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
+      },
+      "get": {
+        "summary": "List Purchases",
+        "description": "This endpoint can be used to list all the successful purchases made between a given interval.",
+        "operationId": "listPurchases",
+        "tags": [
+          "Purchases"
+        ],
         "parameters": [
           {
-            "name": "id",
-            "in": "path",
-            "description": "ID of plant to delete",
-            "required": true,
+            "in": "query",
+            "name": "iccid",
+            "description": "ID of the eSIM",
             "schema": {
-              "type": "integer",
-              "format": "int64"
+              "type": "string",
+              "example": "1111222233334444555",
+              "minLength": 18,
+              "maxLength": 22
+            }
+          },
+          {
+            "in": "query",
+            "name": "afterDate",
+            "description": "Start date of the interval for filtering purchases in the format 'yyyy-MM-dd'",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2023-11-01T00:00:00.000Z"
+            }
+          },
+          {
+            "in": "query",
+            "name": "beforeDate",
+            "description": "End date of the interval for filtering purchases in the format 'yyyy-MM-dd'",
+            "schema": {
+              "type": "string",
+              "format": "date",
+              "example": "2023-11-20T00:00:00.000Z"
+            }
+          },
+          {
+            "in": "query",
+            "name": "referenceId",
+            "description": "The referenceId that was provided by the partner during the purchase or topup flow.",
+            "schema": {
+              "type": "string",
+              "example": "abc111222333444"
+            }
+          },
+          {
+            "in": "query",
+            "name": "afterCursor",
+            "description": "To get the next batch of results, use this parameter. It tells the API where to start fetching data after the last item you received. It helps you avoid repeats and efficiently browse through large sets of data.",
+            "schema": {
+              "type": "string",
+              "example": "Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA"
+            }
+          },
+          {
+            "in": "query",
+            "name": "limit",
+            "description": "Maximum number of purchases to be returned in the response. The value must be greater than 0 and less than or equal to 100. If not provided, the default value is 20",
+            "schema": {
+              "type": "number",
+              "example": 20
+            }
+          },
+          {
+            "in": "query",
+            "name": "after",
+            "deprecated": true,
+            "description": "Epoch value representing the start of the time interval for filtering purchases",
+            "schema": {
+              "type": "number"
+            }
+          },
+          {
+            "in": "query",
+            "name": "before",
+            "description": "Epoch value representing the end of the time interval for filtering purchases",
+            "deprecated": true,
+            "schema": {
+              "type": "number"
             }
           }
         ],
         "responses": {
-          "204": {
-            "description": "Plant deleted",
-            "content": {}
-          },
-          "400": {
-            "description": "unexpected error",
+          "200": {
+            "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Error"
+                  "type": "object",
+                  "properties": {
+                    "purchases": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string",
+                            "example": "4973fa15-6979-4daa-9cf3-672620df819c",
+                            "description": "ID of the purchase"
+                          },
+                          "startDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2023-10-31T22:00:00.000Z",
+                            "description": "Start date of the package's validity in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                          },
+                          "endDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2023-11-20T21:59:59.000Z",
+                            "description": "End date of the package's validity in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                          },
+                          "createdDate": {
+                            "type": "string",
+                            "format": "date-time",
+                            "example": "2023-10-20T00:00:00.000Z",
+                            "description": "Creation date of the purchase in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                          },
+                          "startTime": {
+                            "deprecated": true,
+                            "type": "number",
+                            "description": "Epoch value representing the start time of the package's validity"
+                          },
+                          "endTime": {
+                            "deprecated": true,
+                            "type": "number",
+                            "description": "Epoch value representing the end time of the package's validity"
+                          },
+                          "createdAt": {
+                            "deprecated": true,
+                            "type": "number",
+                            "description": "Epoch value representing the date of creation of the purchase"
+                          },
+                          "package": {
+                            "type": "object",
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "example": "4973fa15-6979-4daa-9cf3-672620df819c",
+                                "description": "ID of the package"
+                              },
+                              "dataLimitInBytes": {
+                                "type": "number",
+                                "example": 1073741824,
+                                "description": "Size of the package in Bytes"
+                              },
+                              "destination": {
+                                "type": "string",
+                                "example": "FRA",
+                                "description": "ISO representation of the package's destination"
+                              },
+                              "destinationName": {
+                                "type": "string",
+                                "example": "France",
+                                "description": "Name of the package's destination"
+                              },
+                              "priceInCents": {
+                                "type": "number",
+                                "example": 10000,
+                                "description": "Price of the package in cents"
+                              }
+                            }
+                          },
+                          "esim": {
+                            "type": "object",
+                            "properties": {
+                              "iccid": {
+                                "type": "string",
+                                "example": "1111222233334444555",
+                                "description": "ID of the eSIM",
+                                "minLength": 18,
+                                "maxLength": 22
+                              }
+                            }
+                          },
+                          "source": {
+                            "type": "string",
+                            "example": "API",
+                            "description": "The source indicates where the eSIM was purchased, which can be from the API, dashboard, landing-page or promo-page. For purchases made before September 8, 2023, the value will be displayed as 'Not available'."
+                          },
+                          "referenceId": {
+                            "type": "string",
+                            "example": "abc111222333444",
+                            "description": "The referenceId that was provided by the partner during the purchase or topup flow. This identifier can be used for analytics and debugging purposes."
+                          }
+                        }
+                      }
+                    },
+                    "afterCursor": {
+                      "type": "string",
+                      "example": "Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA",
+                      "description": "The cursor value representing the end of the current page of results. Use this cursor value as the \"afterCursor\" parameter in your next request to retrieve the subsequent page of results. It ensures that you continue fetching data from where you left off, facilitating smooth pagination.",
+                      "nullable": true
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
                 }
               }
             }
           }
-        }
-      }
-    }
-  },
-  "components": {
-    "schemas": {
-      "Plant": {
-        "required": [
-          "name"
-        ],
-        "type": "object",
-        "properties": {
-          "name": {
-            "description": "The name of the plant",
-            "type": "string"
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const { data } = await celitechSdk.purchases.listPurchases({\n    iccid: '1111222233334444555',\n    afterDate: '2023-11-01T00:00:00.000Z',\n    beforeDate: '2023-11-20T00:00:00.000Z',\n    referenceId: 'abc111222333444',\n    afterCursor: 'Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA',\n    limit: 20,\n    after: 8.41,\n    before: 8.25,\n  });\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
           },
-          "tag": {
-            "description": "Tag to specify the type",
-            "type": "string"
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\n\nvar client = new CelitechSdkClient();\n\nvar response = await client.Purchases.ListPurchasesAsync(\"1111222233334444555\", \"2023-11-01T00:00:00.000Z\", \"2023-11-20T00:00:00.000Z\", \"abc111222333444\", \"Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA\", 20, 5.41, 1.24);\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n  \"github.com/swagger-api/swagger-petstore/pkg/purchases\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\n\nparams := purchases.ListPurchasesRequestParams{}\n\n\nresponse, err := client.Purchases.ListPurchases(context.Background(), params)\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nresult = sdk.purchases.list_purchases(\n    iccid=\"1111222233334444555\",\n    after_date=\"2023-11-01T00:00:00.000Z\",\n    before_date=\"2023-11-20T00:00:00.000Z\",\n    reference_id=\"abc111222333444\",\n    after_cursor=\"Y3JlYXRlZEF0OjE1OTk0OTMwOTgsZGVzdGluYXRpb246QVVTLG1pbkRheXM6MCxkYXRhTGltaXRJbkJ5dGVzOjUzNjg3MDkxMjA\",\n    limit=20\n)\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X GET \\\n  https://api.celitech.net/v1/purchases \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const resp = await fetch(\n    `https://api.celitech.net/v1/purchases`,\n    {\n      method: 'GET',\n      headers: {\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      }\n    }\n  );\n\n  const data = await resp.text();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nurl = \"https://api.celitech.net/v1/purchases\"\n\nheaders = {\"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"}\n\nresponse = requests.get(url, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n    var request = await client.GetAsync(\"https://api.celitech.net/v1/purchases\");\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var host = \"https://api.celitech.net\";\n    var pathname = \"/v1/purchases\";\n    var request = HttpRequest.newBuilder()\n      .GET()\n      .uri(URI.create(host + pathname ))\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  reqUrl := \"https://api.celitech.net/v1/purchases\"\n  req, _ := http.NewRequest(\"GET\", reqUrl, nil)\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\"\n  ],\n  CURLOPT_URL => \"https://api.celitech.net/v1/purchases\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"GET\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\nurl = URI('https://api.celitech.net/v1/purchases')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Get.new(url)\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\n\nresponse = http.request(request)\nputs response.read_body\n"
           }
-        }
-      },
-      "NewPlant": {
-        "allOf": [
-          {
-            "$ref": "#/components/schemas/Plant"
-          },
-          {
-            "required": [
-              "id"
-            ],
-            "type": "object",
-            "properties": {
-              "id": {
-                "description": "Identification number of the plant",
-                "type": "integer",
-                "format": "int64"
+        ]
+      }
+    },
+    "/purchases/topup": {
+      "post": {
+        "summary": "Top-up eSIM",
+        "description": "This endpoint is used to top-up an eSIM with the previously associated destination by providing an existing ICCID and the package details. The top-up is not feasible for eSIMs in \"DELETED\" or \"ERROR\" state.",
+        "operationId": "topUpESIM",
+        "tags": [
+          "Purchases"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "iccid": {
+                    "type": "string",
+                    "example": "1111222233334444555",
+                    "description": "ID of the eSIM",
+                    "minLength": 18,
+                    "maxLength": 22
+                  },
+                  "dataLimitInGB": {
+                    "type": "number",
+                    "example": 1,
+                    "description": "Size of the package in GB. The available options are 1, 2, 3, 5, 8, 20GB"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-11-01T00:00:00.000Z",
+                    "description": "Start date of the package's validity in the format 'yyyy-MM-dd'. This date can be set to the current day or any day within the next 12 months."
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-11-20T00:00:00.000Z",
+                    "description": "End date of the package's validity in the format 'yyyy-MM-dd'. End date can be maximum 90 days after Start date."
+                  },
+                  "email": {
+                    "type": "string",
+                    "example": "example@domain.com",
+                    "description": "Email address where the purchase confirmation email will be sent (excluding QR Code & activation steps)"
+                  },
+                  "referenceId": {
+                    "type": "string",
+                    "example": "abc111222333444",
+                    "description": "An identifier provided by the partner to link this purchase to their booking or transaction for analytics and debugging purposes."
+                  },
+                  "startTime": {
+                    "deprecated": true,
+                    "type": "number",
+                    "description": "Epoch value representing the start time of the package's validity. This timestamp can be set to the current time or any time within the next 12 months."
+                  },
+                  "endTime": {
+                    "deprecated": true,
+                    "type": "number",
+                    "description": "Epoch value representing the end time of the package's validity. End time can be maximum 90 days after Start time."
+                  }
+                },
+                "required": [
+                  "iccid",
+                  "dataLimitInGB",
+                  "startDate",
+                  "endDate"
+                ]
               }
             }
           }
-        ]
-      },
-      "Error": {
-        "required": [
-          "error",
-          "message"
-        ],
-        "type": "object",
-        "properties": {
-          "error": {
-            "type": "integer",
-            "format": "int32"
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "purchase": {
+                      "type": "object",
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "example": "1b97b67a-f4ea-45ff-bbc1-8f424b1418c4",
+                          "description": "ID of the purchase"
+                        },
+                        "packageId": {
+                          "type": "string",
+                          "example": "6cf19d46-b545-4029-a46b-cdeba22b6957",
+                          "description": "ID of the package"
+                        },
+                        "startDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-10-31T22:00:00.000Z",
+                          "description": "Start date of the package's validity in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                        },
+                        "endDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-11-20T21:59:59.000Z",
+                          "description": "End date of the package's validity in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                        },
+                        "createdDate": {
+                          "type": "string",
+                          "format": "date-time",
+                          "example": "2023-10-20T00:00:00.000Z",
+                          "description": "Creation date of the purchase in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                        },
+                        "startTime": {
+                          "deprecated": true,
+                          "type": "number",
+                          "description": "Epoch value representing the start time of the package's validity"
+                        },
+                        "endTime": {
+                          "deprecated": true,
+                          "type": "number",
+                          "description": "Epoch value representing the end time of the package's validity"
+                        }
+                      }
+                    },
+                    "profile": {
+                      "type": "object",
+                      "properties": {
+                        "iccid": {
+                          "type": "string",
+                          "example": "1111222233334444555",
+                          "description": "ID of the eSIM",
+                          "minLength": 18,
+                          "maxLength": 22
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
           },
-          "message": {
-            "type": "string"
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
           }
-        }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk, TopUpEsimRequest } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const topUpEsimRequest: TopUpEsimRequest = {\n    iccid: '1111222233334444555',\n    dataLimitInGb: 1,\n    startDate: '2023-11-01T00:00:00.000Z',\n    endDate: '2023-11-20T00:00:00.000Z',\n    email: 'example@domain.com',\n    referenceId: 'abc111222333444',\n    startTime: 7.94,\n    endTime: 6.74,\n  };\n\n  const { data } = await celitechSdk.purchases.topUpEsim(input);\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\nusing CelitechSdk.Models;\n\nvar client = new CelitechSdkClient();\n\nvar input = new TopUpEsimRequest(\"1111222233334444555\", 1, \"2023-11-01T00:00:00.000Z\", \"2023-11-20T00:00:00.000Z\");\n\nvar response = await client.Purchases.TopUpEsimAsync(input);\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n  \"github.com/swagger-api/swagger-petstore/pkg/purchases\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\n\nrequest := purchases.TopUpEsimRequest{}\nrequest.SetIccid(\"Iccid\")\nrequest.SetDataLimitInGb(float64(123))\nrequest.SetStartDate(\"StartDate\")\nrequest.SetEndDate(\"EndDate\")\n\nresponse, err := client.Purchases.TopUpEsim(context.Background(), request)\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\nfrom celitech_sdk.models import TopUpEsimRequest\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nrequest_body = TopUpEsimRequest(\n    iccid=\"1111222233334444555\",\n    data_limit_in_gb=1,\n    start_date=\"2023-11-01T00:00:00.000Z\",\n    end_date=\"2023-11-20T00:00:00.000Z\",\n    email=\"example@domain.com\",\n    reference_id=\"abc111222333444\"\n)\n\nresult = sdk.purchases.top_up_esim(request_body=request_body)\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X POST \\\n  https://api.celitech.net/v1/purchases/topup \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"iccid\": \"1111222233334444555\",\n    \"dataLimitInGB\": 1,\n    \"startDate\": \"2023-11-01\",\n    \"endDate\": \"2023-11-20\"\n  }'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const resp = await fetch(\n    `https://api.celitech.net/v1/purchases/topup`,\n    {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json',\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      },\n      body: JSON.stringify({\n        iccid: '1111222233334444555',\n        dataLimitInGB: 1,\n        startDate: '2023-11-01',\n        endDate: '2023-11-20'\n      })\n    }\n  );\n\n  const data = await resp.json();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nurl = \"https://api.celitech.net/v1/purchases/topup\"\n\npayload = {\n  \"iccid\": \"1111222233334444555\",\n  \"dataLimitInGB\": 1,\n  \"startDate\": \"2023-11-01\",\n  \"endDate\": \"2023-11-20\"\n}\n\nheaders = {\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\nusing System.Text;\nusing Newtonsoft.Json.Linq;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n    JObject json = JObject.Parse(@\"{\n        iccid: '1111222233334444555',\n        dataLimitInGB: 1,\n        startDate: '2023-11-01',\n        endDate: '2023-11-20'\n      }\");\n    var postData = new StringContent(json.ToString(), Encoding.UTF8, \"application/json\");\n    var request = await client.PostAsync(\"https://api.celitech.net/v1/purchases/topup\", postData);\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var payload = String.join(\"\\n\"\n      , \"{\"\n      , \" \\\"iccid\\\": \\\"1111222233334444555\\\",\"\n      , \" \\\"dataLimitInGB\\\": 1,\"\n      , \" \\\"startDate\\\": \\\"2023-11-01\\\",\"\n      , \" \\\"endDate\\\": \\\"2023-11-20\\\"\"\n      , \"}\"\n    );\n\n    var host = \"https://api.celitech.net\";\n    var pathname = \"/v1/purchases/topup\";\n    var request = HttpRequest.newBuilder()\n      .POST(HttpRequest.BodyPublishers.ofString(payload))\n      .uri(URI.create(host + pathname ))\n      .header(\"Content-Type\", \"application/json\")\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"bytes\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  reqUrl := \"https://api.celitech.net/v1/purchases/topup\"\n  var data = []byte(`{\n    \"iccid\": \"1111222233334444555\",\n    \"dataLimitInGB\": 1,\n    \"startDate\": \"2023-11-01\",\n    \"endDate\": \"2023-11-20\"\n  }`)\n  req, _ := http.NewRequest(\"POST\", reqUrl, bytes.NewBuffer(data))\n  req.Header.Add(\"Content-Type\", \"application/json\")\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\n$curl = curl_init();\n\n$payload = array(\n  \"iccid\" => \"1111222233334444555\",\n  \"dataLimitInGB\" => 1,\n  \"startDate\" => \"2023-11-01\",\n  \"endDate\" => \"2023-11-20\"\n);\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\",\n    \"Content-Type: application/json\"\n  ],\n  CURLOPT_POSTFIELDS => json_encode($payload),\n  CURLOPT_URL => \"https://api.celitech.net/v1/purchases/topup\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"POST\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'json'\nrequire 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\nurl = URI('https://api.celitech.net/v1/purchases/topup')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Post.new(url)\nrequest['Content-Type'] = 'application/json'\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\nrequest.body = {\n  iccid: '1111222233334444555',\n  dataLimitInGB: 1,\n  startDate: '2023-11-01',\n  endDate: '2023-11-20'\n}.to_json\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
       }
     },
-    "securitySchemes": {
-      "bearerAuth": {
-        "type": "http",
-        "scheme": "bearer"
+    "/purchases/edit": {
+      "post": {
+        "summary": "Edit Purchase",
+        "description": "This endpoint allows you to modify the dates of an existing package with a future activation start time. Editing can only be performed for packages that have not been activated, and it cannot change the package size. The modification must not change the package duration category to ensure pricing consistency.",
+        "operationId": "editPurchase",
+        "tags": [
+          "Purchases"
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "purchaseId",
+                  "startDate",
+                  "endDate"
+                ],
+                "properties": {
+                  "purchaseId": {
+                    "type": "string",
+                    "example": "ae471106-c8b4-42cf-b83a-b061291f2922",
+                    "description": "ID of the purchase"
+                  },
+                  "startDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-11-01T00:00:00.000Z",
+                    "description": "Start date of the package's validity in the format 'yyyy-MM-dd'. This date can be set to the current day or any day within the next 12 months."
+                  },
+                  "endDate": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2023-11-20T00:00:00.000Z",
+                    "description": "End date of the package's validity in the format 'yyyy-MM-dd'. End date can be maximum 90 days after Start date."
+                  },
+                  "startTime": {
+                    "deprecated": true,
+                    "type": "number",
+                    "description": "Epoch value representing the start time of the package's validity. This timestamp can be set to the current time or any time within the next 12 months."
+                  },
+                  "endTime": {
+                    "deprecated": true,
+                    "type": "number",
+                    "description": "Epoch value representing the end time of the package's validity. End time can be maximum 90 days after Start time."
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "purchaseId": {
+                      "type": "string",
+                      "example": "ae471106-c8b4-42cf-b83a-b061291f2922",
+                      "description": "ID of the purchase"
+                    },
+                    "newStartDate": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-10-31T22:00:00.000Z",
+                      "description": "Start date of the package's validity in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                    },
+                    "newEndDate": {
+                      "type": "string",
+                      "format": "date-time",
+                      "example": "2023-11-20T21:59:59.000Z",
+                      "description": "End date of the package's validity in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                    },
+                    "newStartTime": {
+                      "deprecated": true,
+                      "type": "number",
+                      "description": "Epoch value representing the new start time of the package's validity"
+                    },
+                    "newEndTime": {
+                      "deprecated": true,
+                      "type": "number",
+                      "description": "Epoch value representing the new end time of the package's validity"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk, EditPurchaseRequest } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const editPurchaseRequest: EditPurchaseRequest = {\n    purchaseId: 'ae471106-c8b4-42cf-b83a-b061291f2922',\n    startDate: '2023-11-01T00:00:00.000Z',\n    endDate: '2023-11-20T00:00:00.000Z',\n    startTime: 2.64,\n    endTime: 5.38,\n  };\n\n  const { data } = await celitechSdk.purchases.editPurchase(input);\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\nusing CelitechSdk.Models;\n\nvar client = new CelitechSdkClient();\n\nvar input = new EditPurchaseRequest(\"ae471106-c8b4-42cf-b83a-b061291f2922\", \"2023-11-01T00:00:00.000Z\", \"2023-11-20T00:00:00.000Z\");\n\nvar response = await client.Purchases.EditPurchaseAsync(input);\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n  \"github.com/swagger-api/swagger-petstore/pkg/purchases\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\n\nrequest := purchases.EditPurchaseRequest{}\nrequest.SetPurchaseId(\"PurchaseId\")\nrequest.SetStartDate(\"StartDate\")\nrequest.SetEndDate(\"EndDate\")\n\nresponse, err := client.Purchases.EditPurchase(context.Background(), request)\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\nfrom celitech_sdk.models import EditPurchaseRequest\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nrequest_body = EditPurchaseRequest(\n    purchase_id=\"ae471106-c8b4-42cf-b83a-b061291f2922\",\n    start_date=\"2023-11-01T00:00:00.000Z\",\n    end_date=\"2023-11-20T00:00:00.000Z\"\n)\n\nresult = sdk.purchases.edit_purchase(request_body=request_body)\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X POST \\\n  https://api.celitech.net/v1/purchases/edit \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>' \\\n  -H 'Content-Type: application/json' \\\n  -d '{\n    \"purchaseId\": \"ae471106-c8b4-42cf-b83a-b061291f2922\",\n    \"startDate\": \"2023-11-01\",\n    \"endDate\": \"2023-11-20\"\n  }'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const resp = await fetch(\n    `https://api.celitech.net/v1/purchases/edit`,\n    {\n      method: 'POST',\n      headers: {\n        'Content-Type': 'application/json',\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      },\n      body: JSON.stringify({\n        purchaseId: 'ae471106-c8b4-42cf-b83a-b061291f2922',\n        startDate: '2023-11-01',\n        endDate: '2023-11-20'\n      })\n    }\n  );\n\n  const data = await resp.json();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nurl = \"https://api.celitech.net/v1/purchases/edit\"\n\npayload = {\n  \"purchaseId\": \"ae471106-c8b4-42cf-b83a-b061291f2922\",\n  \"startDate\": \"2023-11-01\",\n  \"endDate\": \"2023-11-20\"\n}\n\nheaders = {\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"\n}\n\nresponse = requests.post(url, json=payload, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\nusing System.Text;\nusing Newtonsoft.Json.Linq;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n    JObject json = JObject.Parse(@\"{\n        purchaseId: 'ae471106-c8b4-42cf-b83a-b061291f2922',\n        startDate: '2023-11-01',\n        endDate: '2023-11-20'\n      }\");\n    var postData = new StringContent(json.ToString(), Encoding.UTF8, \"application/json\");\n    var request = await client.PostAsync(\"https://api.celitech.net/v1/purchases/edit\", postData);\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var payload = String.join(\"\\n\"\n      , \"{\"\n      , \" \\\"purchaseId\\\": \\\"ae471106-c8b4-42cf-b83a-b061291f2922\\\",\"\n      , \" \\\"startDate\\\": \\\"2023-11-01\\\",\"\n      , \" \\\"endDate\\\": \\\"2023-11-20\\\"\"\n      , \"}\"\n    );\n\n    var host = \"https://api.celitech.net\";\n    var pathname = \"/v1/purchases/edit\";\n    var request = HttpRequest.newBuilder()\n      .POST(HttpRequest.BodyPublishers.ofString(payload))\n      .uri(URI.create(host + pathname ))\n      .header(\"Content-Type\", \"application/json\")\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"bytes\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  reqUrl := \"https://api.celitech.net/v1/purchases/edit\"\n  var data = []byte(`{\n    \"purchaseId\": \"ae471106-c8b4-42cf-b83a-b061291f2922\",\n    \"startDate\": \"2023-11-01\",\n    \"endDate\": \"2023-11-20\"\n  }`)\n  req, _ := http.NewRequest(\"POST\", reqUrl, bytes.NewBuffer(data))\n  req.Header.Add(\"Content-Type\", \"application/json\")\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\n$curl = curl_init();\n\n$payload = array(\n  \"purchaseId\" => \"ae471106-c8b4-42cf-b83a-b061291f2922\",\n  \"startDate\" => \"2023-11-01\",\n  \"endDate\" => \"2023-11-20\"\n);\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\",\n    \"Content-Type: application/json\"\n  ],\n  CURLOPT_POSTFIELDS => json_encode($payload),\n  CURLOPT_URL => \"https://api.celitech.net/v1/purchases/edit\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"POST\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'json'\nrequire 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\nurl = URI('https://api.celitech.net/v1/purchases/edit')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Post.new(url)\nrequest['Content-Type'] = 'application/json'\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\nrequest.body = {\n  purchaseId: 'ae471106-c8b4-42cf-b83a-b061291f2922',\n  startDate: '2023-11-01',\n  endDate: '2023-11-20'\n}.to_json\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
+      }
+    },
+    "/purchases/{purchaseId}/consumption": {
+      "get": {
+        "summary": "Get Purchase Consumption",
+        "description": "This endpoint can be called for consumption notifications (e.g. every 1 hour or when the user clicks a button). It returns the data balance (consumption) of purchased packages.",
+        "operationId": "getPurchaseConsumption",
+        "tags": [
+          "Purchases"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "purchaseId",
+            "description": "ID of the purchase",
+            "schema": {
+              "type": "string",
+              "example": "4973fa15-6979-4daa-9cf3-672620df819c"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "dataUsageRemainingInBytes": {
+                      "type": "number",
+                      "example": 1073741824,
+                      "description": "Remaining balance of the package in bytes"
+                    },
+                    "status": {
+                      "type": "string",
+                      "example": "ACTIVE",
+                      "description": "Status of the connectivity, possible values are 'ACTIVE' or 'NOT_ACTIVE'"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const { data } = await celitechSdk.purchases.getPurchaseConsumption('4973fa15-6979-4daa-9cf3-672620df819c');\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\n\nvar client = new CelitechSdkClient();\n\nvar response = await client.Purchases.GetPurchaseConsumptionAsync(\"4973fa15-6979-4daa-9cf3-672620df819c\");\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\nresponse, err := client.Purchases.GetPurchaseConsumption(context.Background(), \"purchaseId\")\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nresult = sdk.purchases.get_purchase_consumption(purchase_id=\"4973fa15-6979-4daa-9cf3-672620df819c\")\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X GET \\\n  'https://api.celitech.net/v1/purchases/{purchaseId}/consumption' \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const purchaseId = 'YOUR_purchaseId_PARAMETER';\n  const resp = await fetch(\n    `https://api.celitech.net/v1/purchases/${purchaseId}/consumption`,\n    {\n      method: 'GET',\n      headers: {\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      }\n    }\n  );\n\n  const data = await resp.text();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\npurchase_id = \"YOUR_purchaseId_PARAMETER\"\nurl = \"https://api.celitech.net/v1/purchases/\" + purchase_id + \"/consumption\"\n\nheaders = {\"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"}\n\nresponse = requests.get(url, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n      var PurchaseId = \"YOUR_purchaseId_PARAMETER\";\n    var request = await client.GetAsync(\"https://api.celitech.net/v1/purchases/\" + PurchaseId + \"/consumption\");\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var host = \"https://api.celitech.net\";\n    var purchaseId = \"YOUR_purchaseId_PARAMETER\";\n    var pathname = \"/v1/purchases/\" + purchaseId + \"/consumption\";\n    var request = HttpRequest.newBuilder()\n      .GET()\n      .uri(URI.create(host + pathname ))\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  purchaseId := \"YOUR_purchaseId_PARAMETER\";\n  reqUrl := \"https://api.celitech.net/v1/purchases/\" + purchaseId + \"/consumption\"\n  req, _ := http.NewRequest(\"GET\", reqUrl, nil)\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\nconst purchaseId = \"YOUR_purchaseId_PARAMETER\";\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\"\n  ],\n  CURLOPT_URL => \"https://api.celitech.net/v1/purchases/\" . purchaseId . \"/consumption\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"GET\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\npurchase_id = 'YOUR_purchaseId_PARAMETER'\nurl = URI('https://api.celitech.net/v1/purchases/' + purchase_id + '/consumption')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Get.new(url)\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
+      }
+    },
+    "/esim": {
+      "get": {
+        "summary": "Get eSIM Status",
+        "description": "Get eSIM Status",
+        "operationId": "getESIM",
+        "tags": [
+          "eSIM"
+        ],
+        "parameters": [
+          {
+            "in": "query",
+            "required": true,
+            "name": "iccid",
+            "description": "ID of the eSIM",
+            "schema": {
+              "type": "string",
+              "example": "1111222233334444555",
+              "minLength": 18,
+              "maxLength": 22
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "esim": {
+                      "type": "object",
+                      "properties": {
+                        "iccid": {
+                          "type": "string",
+                          "example": "1111222233334444555",
+                          "description": "ID of the eSIM",
+                          "minLength": 18,
+                          "maxLength": 22
+                        },
+                        "smdpAddress": {
+                          "type": "string",
+                          "example": "CELITECH.IDEMIA.IO",
+                          "description": "SM-DP+ Address"
+                        },
+                        "manualActivationCode": {
+                          "type": "string",
+                          "example": "LPA:1$CELITECH.IDEMIA.IO$AAAAA-BBBBB-CCCCC-DDDDD",
+                          "description": "The manual activation code"
+                        },
+                        "status": {
+                          "type": "string",
+                          "example": "RELEASED",
+                          "description": "Status of the eSIM, possible values are 'RELEASED', 'DOWNLOADED', 'INSTALLED', 'ENABLED', 'DELETED', or 'ERROR'"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const { data } = await celitechSdk.eSim.getEsim({\n    iccid: '1111222233334444555',\n  });\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\n\nvar client = new CelitechSdkClient();\n\nvar response = await client.ESim.GetEsimAsync(\"1111222233334444555\");\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n  \"github.com/swagger-api/swagger-petstore/pkg/esim\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\n\nparams := esim.GetEsimRequestParams{}\nparams.SetIccid(\"string\")\n\nresponse, err := client.ESim.GetEsim(context.Background(), params)\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nresult = sdk.e_sim.get_esim(iccid=\"1111222233334444555\")\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X GET \\\n  'https://api.celitech.net/v1/esim?iccid=1111222233334444555' \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const query = new URLSearchParams({\n    iccid: '1111222233334444555'\n  }).toString();\n\n  const resp = await fetch(\n    `https://api.celitech.net/v1/esim?${query}`,\n    {\n      method: 'GET',\n      headers: {\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      }\n    }\n  );\n\n  const data = await resp.text();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\nurl = \"https://api.celitech.net/v1/esim\"\n\nquery = {\n  \"iccid\": \"1111222233334444555\"\n}\n\nheaders = {\"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"}\n\nresponse = requests.get(url, headers=headers, params=query)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n    var request = await client.GetAsync(\"https://api.celitech.net/v1/esim?iccid=1111222233334444555\");\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\nimport java.nio.charset.StandardCharsets;\nimport java.util.stream.Collectors;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    HashMap<String, String> params = new HashMap<>();\n    params.put(\"iccid\", \"1111222233334444555\");\n\n    var query = params.keySet().stream()\n      .map(key -> key + \"=\" + URLEncoder.encode(params.get(key), StandardCharsets.UTF_8))\n      .collect(Collectors.joining(\"&\"));\n\n    var host = \"https://api.celitech.net\";\n    var pathname = \"/v1/esim\";\n    var request = HttpRequest.newBuilder()\n      .GET()\n      .uri(URI.create(host + pathname + '?' + query))\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  reqUrl := \"https://api.celitech.net/v1/esim\"\n  req, _ := http.NewRequest(\"GET\", reqUrl, nil)\n\n  query := req.URL.Query()\n  query.Add(\"iccid\", \"1111222233334444555\")\n  req.URL.RawQuery = query.Encode()\n\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\n$query = array(\n  \"iccid\" => \"1111222233334444555\"\n);\n\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\"\n  ],\n  CURLOPT_URL => \"https://api.celitech.net/v1/esim?\" . http_build_query($query),\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"GET\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\nurl = URI('https://api.celitech.net/v1/esim')\nparams = {\n  iccid: '1111222233334444555'\n}\nurl.query = URI.encode_www_form(params)\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Get.new(url)\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
+      }
+    },
+    "/esim/{iccid}/device": {
+      "get": {
+        "summary": "Get eSIM Device",
+        "description": "Get eSIM Device",
+        "operationId": "getESIMDevice",
+        "tags": [
+          "eSIM"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "iccid",
+            "description": "ID of the eSIM",
+            "schema": {
+              "type": "string",
+              "example": "1111222233334444555",
+              "minLength": 18,
+              "maxLength": 22
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "device": {
+                      "type": "object",
+                      "properties": {
+                        "oem": {
+                          "type": "string",
+                          "example": "Apple",
+                          "description": "Name of the OEM"
+                        },
+                        "hardwareName": {
+                          "type": "string",
+                          "example": "iPhone XR",
+                          "description": "Name of the Device"
+                        },
+                        "hardwareModel": {
+                          "type": "string",
+                          "example": "A1920",
+                          "description": "Model of the Device"
+                        },
+                        "eid": {
+                          "type": "string",
+                          "example": "12345678901234567890123456789012",
+                          "description": "Serial Number of the eSIM"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const { data } = await celitechSdk.eSim.getEsimDevice('1111222233334444555');\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\n\nvar client = new CelitechSdkClient();\n\nvar response = await client.ESim.GetEsimDeviceAsync(\"1111222233334444555\");\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\nresponse, err := client.ESim.GetEsimDevice(context.Background(), \"iccid\")\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nresult = sdk.e_sim.get_esim_device(iccid=\"1111222233334444555\")\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X GET \\\n  'https://api.celitech.net/v1/esim/{iccid}/device' \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const iccid = 'YOUR_iccid_PARAMETER';\n  const resp = await fetch(\n    `https://api.celitech.net/v1/esim/${iccid}/device`,\n    {\n      method: 'GET',\n      headers: {\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      }\n    }\n  );\n\n  const data = await resp.text();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\niccid = \"YOUR_iccid_PARAMETER\"\nurl = \"https://api.celitech.net/v1/esim/\" + iccid + \"/device\"\n\nheaders = {\"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"}\n\nresponse = requests.get(url, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n      var Iccid = \"YOUR_iccid_PARAMETER\";\n    var request = await client.GetAsync(\"https://api.celitech.net/v1/esim/\" + Iccid + \"/device\");\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var host = \"https://api.celitech.net\";\n    var iccid = \"YOUR_iccid_PARAMETER\";\n    var pathname = \"/v1/esim/\" + iccid + \"/device\";\n    var request = HttpRequest.newBuilder()\n      .GET()\n      .uri(URI.create(host + pathname ))\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  iccid := \"YOUR_iccid_PARAMETER\";\n  reqUrl := \"https://api.celitech.net/v1/esim/\" + iccid + \"/device\"\n  req, _ := http.NewRequest(\"GET\", reqUrl, nil)\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\nconst iccid = \"YOUR_iccid_PARAMETER\";\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\"\n  ],\n  CURLOPT_URL => \"https://api.celitech.net/v1/esim/\" . iccid . \"/device\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"GET\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\niccid = 'YOUR_iccid_PARAMETER'\nurl = URI('https://api.celitech.net/v1/esim/' + iccid + '/device')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Get.new(url)\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
+      }
+    },
+    "/esim/{iccid}/history": {
+      "get": {
+        "summary": "Get eSIM History",
+        "description": "Get eSIM History",
+        "operationId": "getESIMHistory",
+        "tags": [
+          "eSIM"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "iccid",
+            "description": "ID of the eSIM",
+            "schema": {
+              "type": "string",
+              "example": "1111222233334444555",
+              "minLength": 18,
+              "maxLength": 22
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "esim": {
+                      "type": "object",
+                      "properties": {
+                        "iccid": {
+                          "type": "string",
+                          "example": "1111222233334444555",
+                          "description": "ID of the eSIM",
+                          "minLength": 18,
+                          "maxLength": 22
+                        },
+                        "history": {
+                          "type": "array",
+                          "items": {
+                            "type": "object",
+                            "properties": {
+                              "status": {
+                                "type": "string",
+                                "example": "INSTALLED",
+                                "description": "The status of the eSIM at a given time, possible values are 'RELEASED', 'DOWNLOADED', 'INSTALLED', 'ENABLED', 'DELETED', or 'ERROR'"
+                              },
+                              "statusDate": {
+                                "type": "string",
+                                "format": "date-time",
+                                "example": "2023-10-20T00:00:00.000Z",
+                                "description": "The date when the eSIM status changed in the format 'yyyy-MM-ddThh:mm:ssZZ'"
+                              },
+                              "date": {
+                                "deprecated": true,
+                                "type": "number",
+                                "description": "Epoch value representing the date when the eSIM status changed"
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const { data } = await celitechSdk.eSim.getEsimHistory('1111222233334444555');\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\n\nvar client = new CelitechSdkClient();\n\nvar response = await client.ESim.GetEsimHistoryAsync(\"1111222233334444555\");\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\nresponse, err := client.ESim.GetEsimHistory(context.Background(), \"iccid\")\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nresult = sdk.e_sim.get_esim_history(iccid=\"1111222233334444555\")\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X GET \\\n  'https://api.celitech.net/v1/esim/{iccid}/history' \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const iccid = 'YOUR_iccid_PARAMETER';\n  const resp = await fetch(\n    `https://api.celitech.net/v1/esim/${iccid}/history`,\n    {\n      method: 'GET',\n      headers: {\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      }\n    }\n  );\n\n  const data = await resp.text();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\niccid = \"YOUR_iccid_PARAMETER\"\nurl = \"https://api.celitech.net/v1/esim/\" + iccid + \"/history\"\n\nheaders = {\"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"}\n\nresponse = requests.get(url, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n      var Iccid = \"YOUR_iccid_PARAMETER\";\n    var request = await client.GetAsync(\"https://api.celitech.net/v1/esim/\" + Iccid + \"/history\");\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var host = \"https://api.celitech.net\";\n    var iccid = \"YOUR_iccid_PARAMETER\";\n    var pathname = \"/v1/esim/\" + iccid + \"/history\";\n    var request = HttpRequest.newBuilder()\n      .GET()\n      .uri(URI.create(host + pathname ))\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  iccid := \"YOUR_iccid_PARAMETER\";\n  reqUrl := \"https://api.celitech.net/v1/esim/\" + iccid + \"/history\"\n  req, _ := http.NewRequest(\"GET\", reqUrl, nil)\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\nconst iccid = \"YOUR_iccid_PARAMETER\";\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\"\n  ],\n  CURLOPT_URL => \"https://api.celitech.net/v1/esim/\" . iccid . \"/history\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"GET\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\niccid = 'YOUR_iccid_PARAMETER'\nurl = URI('https://api.celitech.net/v1/esim/' + iccid + '/history')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Get.new(url)\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
+      }
+    },
+    "/esim/{iccid}/mac": {
+      "get": {
+        "summary": "Get eSIM MAC",
+        "description": "Get eSIM MAC",
+        "operationId": "getESIMMac",
+        "tags": [
+          "eSIM"
+        ],
+        "parameters": [
+          {
+            "in": "path",
+            "required": true,
+            "name": "iccid",
+            "description": "ID of the eSIM",
+            "schema": {
+              "type": "string",
+              "example": "1111222233334444555",
+              "minLength": 18,
+              "maxLength": 22
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "esim": {
+                      "type": "object",
+                      "properties": {
+                        "iccid": {
+                          "type": "string",
+                          "example": "1111222233334444555",
+                          "description": "ID of the eSIM",
+                          "minLength": 18,
+                          "maxLength": 22
+                        },
+                        "smdpAddress": {
+                          "type": "string",
+                          "example": "CELITECH.IDEMIA.IO",
+                          "description": "SM-DP+ Address"
+                        },
+                        "manualActivationCode": {
+                          "type": "string",
+                          "example": "LPA:1$CELITECH.IDEMIA.IO$AAAAA-BBBBB-CCCCC-DDDDD",
+                          "description": "The manual activation code"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "this is an example error message",
+                      "description": "Message of the error"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "x-codeSamples": [
+          {
+            "lang": "typescript",
+            "source": "import { CelitechSdk } from 'celitech-sdk';\n\n(async () => {\n  const celitechSdk = new CelitechSdk({\n    token: 'YOUR_TOKEN',\n  });\n\n  const { data } = await celitechSdk.eSim.getEsimMac('1111222233334444555');\n\n  console.log(data);\n})();\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "csharp",
+            "source": "using CelitechSdk;\n\nvar client = new CelitechSdkClient();\n\nvar response = await client.ESim.GetEsimMacAsync(\"1111222233334444555\");\n\nConsole.WriteLine(response);\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "go",
+            "source": "import (\n  \"fmt\"\n  \"encoding/json\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdkconfig\"\n  \"github.com/swagger-api/swagger-petstore/pkg/celitechsdk\"\n)\n\nconfig := celitechsdkconfig.NewConfig()\nclient := celitechsdk.NewCelitechSdk(config)\n\nresponse, err := client.ESim.GetEsimMac(context.Background(), \"iccid\")\nif err != nil {\n  panic(err)\n}\n\nfmt.Print(response)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "python",
+            "source": "from celitech_sdk import CelitechSdk, Environment\n\nsdk = CelitechSdk(\n    access_token=\"YOUR_ACCESS_TOKEN\",\n    base_url=Environment.DEFAULT.value,\n    timeout=10000\n)\n\nresult = sdk.e_sim.get_esim_mac(iccid=\"1111222233334444555\")\n\nprint(result)\n\n```\n\n<!-- This file was generated by liblab | https://liblab.com/"
+          },
+          {
+            "lang": "cURL",
+            "label": "cURL",
+            "source": "curl -i -X GET \\\n  'https://api.celitech.net/v1/esim/{iccid}/mac' \\\n  -H 'Authorization: Bearer <YOUR_TOKEN_HERE>'\n"
+          },
+          {
+            "lang": "Node.js",
+            "label": "Node.js",
+            "source": "import fetch from 'node-fetch';\n\nasync function run() {\n  const iccid = 'YOUR_iccid_PARAMETER';\n  const resp = await fetch(\n    `https://api.celitech.net/v1/esim/${iccid}/mac`,\n    {\n      method: 'GET',\n      headers: {\n        Authorization: 'Bearer <YOUR_TOKEN_HERE>'\n      }\n    }\n  );\n\n  const data = await resp.text();\n  console.log(data);\n}\n\nrun();\n"
+          },
+          {
+            "lang": "Python",
+            "label": "Python",
+            "source": "import requests\n\niccid = \"YOUR_iccid_PARAMETER\"\nurl = \"https://api.celitech.net/v1/esim/\" + iccid + \"/mac\"\n\nheaders = {\"Authorization\": \"Bearer <YOUR_TOKEN_HERE>\"}\n\nresponse = requests.get(url, headers=headers)\n\ndata = response.json()\nprint(data)\n"
+          },
+          {
+            "lang": "C#",
+            "label": "C#",
+            "source": "using System;\nusing System.Net.Http;\nusing System.Threading.Tasks;\n\npublic class Program\n{\n  private readonly IHttpClientFactory _httpClientFactory;\n  public static async Task Main(string[] args)\n  {\n    var client = _httpClientFactory.CreateClient();\n    client.DefaultRequestHeaders.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\");\n      var Iccid = \"YOUR_iccid_PARAMETER\";\n    var request = await client.GetAsync(\"https://api.celitech.net/v1/esim/\" + Iccid + \"/mac\");\n    var response = await request.Content.ReadAsStringAsync();\n\n    Console.WriteLine(response);\n  }\n}\n"
+          },
+          {
+            "lang": "Java",
+            "label": "Java",
+            "source": "import java.net.*;\nimport java.net.http.*;\nimport java.util.*;\n\npublic class App {\n  public static void main(String[] args) throws Exception {\n    var httpClient = HttpClient.newBuilder().build();\n\n    var host = \"https://api.celitech.net\";\n    var iccid = \"YOUR_iccid_PARAMETER\";\n    var pathname = \"/v1/esim/\" + iccid + \"/mac\";\n    var request = HttpRequest.newBuilder()\n      .GET()\n      .uri(URI.create(host + pathname ))\n      .header(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n      .build();\n\n    var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());\n\n    System.out.println(response.body());\n  }\n}\n"
+          },
+          {
+            "lang": "Go",
+            "label": "Go",
+            "source": "package main\n\nimport (\n  \"fmt\"\n  \"net/http\"\n  \"io/ioutil\"\n)\n\nfunc main() {\n  iccid := \"YOUR_iccid_PARAMETER\";\n  reqUrl := \"https://api.celitech.net/v1/esim/\" + iccid + \"/mac\"\n  req, _ := http.NewRequest(\"GET\", reqUrl, nil)\n  req.Header.Add(\"Authorization\", \"Bearer <YOUR_TOKEN_HERE>\")\n  res, _ := http.DefaultClient.Do(req)\n  defer res.Body.Close()\n  body, _ := ioutil.ReadAll(res.Body)\n\n  fmt.Println(res)\n  fmt.Println(string(body))\n}\n"
+          },
+          {
+            "lang": "PHP",
+            "label": "PHP",
+            "source": "/**\n* Requires libcurl\n*/\n\nconst iccid = \"YOUR_iccid_PARAMETER\";\n$curl = curl_init();\n\ncurl_setopt_array($curl, [\n  CURLOPT_HTTPHEADER => [\n    \"Authorization: Bearer <YOUR_TOKEN_HERE>\"\n  ],\n  CURLOPT_URL => \"https://api.celitech.net/v1/esim/\" . iccid . \"/mac\",\n  CURLOPT_RETURNTRANSFER => true,\n  CURLOPT_CUSTOMREQUEST => \"GET\",\n]);\n\n$response = curl_exec($curl);\n$error = curl_error($curl);\n\ncurl_close($curl);\n\nif ($error) {\n  echo \"cURL Error #:\" . $error;\n} else {\n  echo $response;\n}\n"
+          },
+          {
+            "lang": "Ruby",
+            "label": "Ruby",
+            "source": "require 'uri'\nrequire 'net/http'\nrequire 'openssl'\n\niccid = 'YOUR_iccid_PARAMETER'\nurl = URI('https://api.celitech.net/v1/esim/' + iccid + '/mac')\n\nhttp = Net::HTTP.new(url.host, url.port)\nhttp.use_ssl = true\n\nrequest = Net::HTTP::Get.new(url)\nrequest['Authorization'] = 'Bearer <YOUR_TOKEN_HERE>'\n\nresponse = http.request(request)\nputs response.read_body\n"
+          }
+        ]
       }
     }
-  }
+  },
+  "tags": [
+    {
+      "name": "Destinations",
+      "description": "Destinations encapsulate the various countries & regions that CELITECH currently supports."
+    },
+    {
+      "name": "eSIM",
+      "description": "The eSIM endpoints encompass a wide range of functionalities related to the partner's owned eSIMs. This includes obtaining detailed information about eSIM devices, eSIM history, determining the current eSIM status, retrieving activation codes, and exploring various other attributes and actions associated with eSIM management."
+    },
+    {
+      "name": "Packages",
+      "description": "The Packages endpoint focuses on the data packages offered by CELITECH."
+    },
+    {
+      "name": "Purchases",
+      "description": "The Purchases endpoints offer extensive capabilities for managing eSIM purchases. Partners can utilize these endpoints to acquire new eSIMs, top-up an existing eSIM, list all existing purchases, update the activation period for future purchases, monitor the consumption and status of current purchases, and access other functionalities to support different purchasing workflows and requirements."
+    }
+  ],
+  "x-tagGroups": [
+    {
+      "name": "API Endpoints",
+      "tags": [
+        "Destinations",
+        "Packages",
+        "Purchases",
+        "eSIM"
+      ]
+    }
+  ]
 }
